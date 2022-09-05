@@ -1,13 +1,13 @@
 <template>
   <div id="app">
-    <h1>KPESTIKI NOLIKI</h1>
+    <h1>Tic-tac-toe</h1>
       <table>
         <tr v-for="i in this.field.length">
           <td
               v-for="j in this.field && this.field[0].length"
               :class="{
-                'win' : (winPositions.indexOf(this.getPositionIndex(i - 1, j - 1)) !== -1),
-                'left-up' : (i === 1 && j === 1),
+                'win' : (winPositions.indexOf(this.getPositionIndex(i - 1, j - 1)) !== -1), // говорим, что класс клетки win если ее номер есть в списке победителей
+                'left-up' : (i === 1 && j === 1), // эти классы активны тогда, когда границы клетки нужно закруглить
                 'right-up' : (i === 1 && j === sizeOfField),
                 'left-down' : (i === sizeOfField && j === 1),
                 'right-down' : (i === sizeOfField && j === sizeOfField)
@@ -15,10 +15,10 @@
               @click="putSign(i - 1, j - 1)"
           >
             <transition name="fade">
-              <img v-show="field[i - 1][j - 1] === 1" src="@/assets/x.svg" alt="X">
+              <img v-show="field[i - 1][j - 1] === 1 /* картинка крестика видна только тогда, когда этого требует состояние */" src="@/assets/x.svg" alt="X">
             </transition>
             <transition name="fade">
-              <img class="O" v-show="field[i - 1][j - 1] === -1" src="@/assets/circle.svg" alt="O ">
+              <img class="O" v-show="field[i - 1][j - 1] === -1 /* картинка нолика видна только тогда, когда этого требует состояние */" src="@/assets/circle.svg" alt="O ">
             </transition>
           </td>
         </tr>
@@ -46,8 +46,7 @@
 <script>
 
 const rules = {
-  1: 1,
-  2: 2,
+  // количество символов, необходимое для выставление подряд в квадрате с данной стороной, для победы
   3: 3,
   4: 4,
   5: 4,
@@ -63,16 +62,16 @@ export default {
           [0, 0, 0],
           [0, 0, 0],
           [0, 0, 0],
-      ],
-      winPositions : [],
-      currentType: 1,
-      finished: true,
-      sizeOfField: 3,
-      completed: 0
+      ], // состояние нашего поля: 0 - ничего, 1 - крестик, -1 нолик,
+      winPositions : [], // на каких позициях достгнута победа
+      currentType: 1, // тип следующего символа
+      finished: true, // завершена ли игра
+      sizeOfField: 3, // размер стороны поля
+      completed: 0 // количество выставленных символов
     }
   },
   methods: {
-    putSign(i, j) {
+    putSign(i, j) { // метод, отвечающий за выставление знака (x или о)
       if (this.field[i][j] || this.finished) {
         return;
       }
@@ -85,10 +84,10 @@ export default {
         this.finished = this.check4();
       }
     },
-    getPositionIndex(i, j) {
+    getPositionIndex(i, j) { // функция, которая возвращает число, которая задаётся парой (x, y).
       return (i - 1) * this.sizeOfField + j - 1;
     },
-    check3() {
+    check3() { // функция, которая проверяет, есть ли у нас 3 подряд одинаковых символа
       for (let i = 0; i < this.sizeOfField; i++) {
         for (let j = 0; j <= this.sizeOfField - rules[this.sizeOfField]; j++) {
           if (this.field[i][j] && this.field[i][j] === this.field[i][j + 1] && this.field[i][j + 1] === this.field[i][j + 2]) {
@@ -117,9 +116,9 @@ export default {
           }
         }
       }
-      return this.completed === this.sizeOfField * this.sizeOfField;
+      return this.completed === this.sizeOfField * this.sizeOfField; // даже если никто не победил, то если игра закончилась возвращаем true
     },
-    check4() {
+    check4() { // функция, которая проверяет, есть ли у нас 4 подряд одинаковых символа
       for (let i = 0; i < this.sizeOfField; i++) {
         for (let j = 0; j <= this.sizeOfField - rules[this.sizeOfField]; j++) {
           if (this.field[i][j] && this.field[i][j] === this.field[i][j + 1] && this.field[i][j + 1] === this.field[i][j + 2] && this.field[i][j + 1] === this.field[i][j + 3]) {
@@ -152,14 +151,15 @@ export default {
           }
         }
       }
-      return this.completed === this.sizeOfField * this.sizeOfField;
+      return this.completed === this.sizeOfField * this.sizeOfField; // даже если никто не победил, то если игра закончилась возвращаем true
     },
-    rebuild(sz) {
+    rebuild(sz) { // функция, которая строит наше field с длинной стороны sz.
       this.field = [];
       this.sizeOfField = sz;
       for (let i = 0; i < this.sizeOfField; i++) {
         this.field.push(Array(this.sizeOfField));
       }
+      // чистим все предыдущие значения
       this.winPositions = [];
       this.finished = false;
       this.currentType = 1;
