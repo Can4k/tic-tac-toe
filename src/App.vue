@@ -263,8 +263,8 @@ button:hover {
 }
 @media screen and (min-width: 600px){
   td {
-    width: 120px;
-    height: 120px;
+    width: 110px;
+    height: 110px;
   }
   h1 {
     font-size: 60px;
