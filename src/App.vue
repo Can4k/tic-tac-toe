@@ -261,4 +261,25 @@ button:hover {
 .fade-leave-to {
   transform: scale(0);
 }
+@media screen and (min-width: 600px){
+  td {
+    width: 120px;
+    height: 120px;
+  }
+  h1 {
+    font-size: 60px;
+  }
+  button {
+    font-size: 30px;
+  }
+  .buttons-container {
+    margin-top: 30px;
+  }
+  img {
+    width: 100px;
+  }
+  .O {
+    width: 75px;
+  }
+}
 </style>
