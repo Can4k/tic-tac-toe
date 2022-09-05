@@ -34,6 +34,11 @@
           4 x 4
         </button>
       </transition>
+      <transition name="fade">
+        <button v-show="finished" @click="rebuild(5)">
+          5 x 5
+        </button>
+      </transition>
     </div>
   </div>
 </template>
@@ -74,7 +79,7 @@ export default {
       this.completed++;
       this.field[i][j] = this.currentType;
       this.currentType = (this.currentType === -1? 1 : -1);
-      if (this.sizeOfField === 3) {
+      if (rules[this.sizeOfField] === 3) {
         this.finished = this.check3();
       } else {
         this.finished = this.check4();
