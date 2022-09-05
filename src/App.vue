@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <h1>tic-tac-toe</h1>
+    <h1>KPESTIKI NOLIKI</h1>
       <table>
-        <tr v-for="i in 3">
+        <tr v-for="i in this.field.length">
           <td
-              v-for="j in 3"
+              v-for="j in this.field && this.field[0].length"
               :class="{
-                'win' : (winPositions.indexOf(this.getPos(i - 1, j - 1)) !== -1),
+                'win' : (winPositions.indexOf(this.getPositionIndex(i - 1, j - 1)) !== -1),
                 'left-up' : (i === 1 && j === 1),
-                'right-up' : (i === 1 && j === 3),
-                'left-down' : (i === 3 && j === 1),
-                'right-down' : (i === 3 && j === 3)
+                'right-up' : (i === 1 && j === sizeOfField),
+                'left-down' : (i === sizeOfField && j === 1),
+                'right-down' : (i === sizeOfField && j === sizeOfField)
               }"
               @click="putSign(i - 1, j - 1)"
           >
@@ -23,30 +23,47 @@
           </td>
         </tr>
       </table>
-    <transition name="fade">
-      <button v-show="finished" @click="rebuild">
-        Play again
-      </button>
-    </transition>
+    <div class="buttons-container">
+      <transition name="fade">
+        <button v-show="finished" @click="rebuild(3)">
+          3 x 3
+        </button>
+      </transition>
+      <transition name="fade">
+        <button v-show="finished" @click="rebuild(4)">
+          4 x 4
+        </button>
+      </transition>
+    </div>
   </div>
 </template>
 
 <script>
+
+const rules = {
+  1: 1,
+  2: 2,
+  3: 3,
+  4: 3,
+  5: 4,
+  6: 4,
+  7: 5
+}
+
 export default {
   name: 'App',
-  components: {
-
-  },
   data() {
     return {
       field: [
           [0, 0, 0],
           [0, 0, 0],
-          [0, 0, 0]
+          [0, 0, 0],
       ],
       winPositions : [],
       currentType: 1,
-      finished: false
+      finished: true,
+      sizeOfField: 3,
+      completed: 0
     }
   },
   methods: {
@@ -54,54 +71,55 @@ export default {
       if (this.field[i][j] || this.finished) {
         return;
       }
-      this.complited++;
+      this.completed++;
       this.field[i][j] = this.currentType;
       this.currentType = (this.currentType === -1? 1 : -1);
       this.finished = this.check();
     },
-    getPos(i, j) {
-      return (i - 1) * 3 + j - 1;
+    getPositionIndex(i, j) {
+      return (i - 1) * this.sizeOfField + j - 1;
     },
     check() {
-      for (let i = 0; i < 3; i++) {
-        if (this.field[i][0] && this.field[i][0] === this.field[i][1] && this.field[i][1] === this.field[i][2]) {
-          this.winPositions.push(this.getPos(i, 0));
-          this.winPositions.push(this.getPos(i, 1));
-          this.winPositions.push(this.getPos(i, 2));
-          console.table(this.winPositions);
-          return true;
+      for (let i = 0; i < this.sizeOfField; i++) {
+        for (let j = 0; j <= this.sizeOfField - rules[this.sizeOfField]; j++) {
+          if (this.field[i][j] && this.field[i][j] === this.field[i][j + 1] && this.field[i][j + 1] === this.field[i][j + 2]) {
+            this.winPositions.push(this.getPositionIndex(i, j));
+            this.winPositions.push(this.getPositionIndex(i, j + 1));
+            this.winPositions.push(this.getPositionIndex(i, j + 2));
+            return true;
+          }
+          if (this.field[j][i] && this.field[j][i] === this.field[j + 1][i] && this.field[j + 1][i] === this.field[j + 2][i]) {
+            this.winPositions.push(this.getPositionIndex(j, i));
+            this.winPositions.push(this.getPositionIndex(j + 1, i));
+            this.winPositions.push(this.getPositionIndex(j + 2, i));
+            return true;
+          }
+          if (i + 2 < this.sizeOfField && j + 2 < this.sizeOfField && this.field[i][j] && this.field[i][j] === this.field[i + 1][j + 1] && this.field[i + 1][j + 1] === this.field[i + 2][j + 2]) {
+            this.winPositions.push(this.getPositionIndex(i, j));
+            this.winPositions.push(this.getPositionIndex(i + 1, j + 1));
+            this.winPositions.push(this.getPositionIndex(i + 2, j + 2));
+            return true;
+          }
+          if (i + 2 < this.sizeOfField && this.sizeOfField - j - 3 >= 0 && this.field[this.sizeOfField - j - 1][i] && this.field[this.sizeOfField - j - 1][i] === this.field[this.sizeOfField - j - 2][i + 1] && this.field[this.sizeOfField - j - 2][i + 1] === this.field[this.sizeOfField - j - 3][i + 2]) {
+            this.winPositions.push(this.getPositionIndex(this.sizeOfField - j - 1, i));
+            this.winPositions.push(this.getPositionIndex(this.sizeOfField - j - 2, i + 1));
+            this.winPositions.push(this.getPositionIndex(this.sizeOfField - j - 3, i + 2));
+            return true;
+          }
         }
-        if (this.field[0][i] && this.field[0][i] === this.field[1][i] && this.field[1][i] === this.field[2][i]) {
-          this.winPositions.push(this.getPos(0, i));
-          this.winPositions.push(this.getPos(1, i));
-          this.winPositions.push(this.getPos(2, i));
-          return true;
-        }
       }
-      if (this.field[0][0] && this.field[0][0] === this.field[1][1] && this.field[1][1] === this.field[2][2]) {
-        this.winPositions.push(this.getPos(0, 0));
-        this.winPositions.push(this.getPos(1, 1));
-        this.winPositions.push(this.getPos(2, 2));
-        return true;
-      }
-      if (this.field[0][2] && this.field[0][2] === this.field[1][1] && this.field[1][1] === this.field[2][0]) {
-        this.winPositions.push(this.getPos(0, 2));
-        this.winPositions.push(this.getPos(1, 1));
-        this.winPositions.push(this.getPos(2, 0));
-        return true;
-      }
-      return this.complited === 9;
+      return this.completed === this.sizeOfField * this.sizeOfField;
     },
-    rebuild() {
-      this.field = [
-        [0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]
-      ];
+    rebuild(sz) {
+      this.field = [];
+      this.sizeOfField = sz;
+      for (let i = 0; i < this.sizeOfField; i++) {
+        this.field.push(Array(this.sizeOfField));
+      }
       this.winPositions = [];
       this.finished = false;
       this.currentType = 1;
-      this.complited = 0;
+      this.completed = 0;
     }
   },
 }
@@ -114,16 +132,18 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: black;
-  margin-top: 60px;
+  margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
 }
 table {
+  margin-top: 26px;
   border: 1px solid black;
   background-color: black;
   border-radius: 8px;
+  transition-duration: .3s;
 }
 tr {
   display: flex;
@@ -150,19 +170,29 @@ img {
   margin: 6px;
 }
 h1 {
-  font-size: 70px;
+  font-size: 40px;
   font-family: 'Lexend Exa', sans-serif;
 }
 button {
-  margin-top: 20px;
   font-family: 'Lexend Exa', sans-serif;
   font-size: 20px;
   border-radius: 5px;
   background-color: white;
   border: 1px solid black;
-  padding: 3px;
+  padding: 5px;
   transition-duration: 1s;
   cursor: pointer;
+  margin: 10px;
+}
+button:hover {
+  background-color: yellow;
+  box-shadow: 0 0 10px -7px yellow;
+}
+.buttons-container {
+  margin-top: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .win {
   background-color: yellow;
