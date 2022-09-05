@@ -54,6 +54,7 @@ export default {
       if (this.field[i][j] || this.finished) {
         return;
       }
+      this.complited++;
       this.field[i][j] = this.currentType;
       this.currentType = (this.currentType === -1? 1 : -1);
       this.finished = this.check();
@@ -89,7 +90,7 @@ export default {
         this.winPositions.push(this.getPos(2, 0));
         return true;
       }
-      return false;
+      return this.complited === 9;
     },
     rebuild() {
       this.field = [
@@ -100,6 +101,7 @@ export default {
       this.winPositions = [];
       this.finished = false;
       this.currentType = 1;
+      this.complited = 0;
     }
   },
 }
