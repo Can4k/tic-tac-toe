@@ -44,7 +44,7 @@ const rules = {
   1: 1,
   2: 2,
   3: 3,
-  4: 3,
+  4: 4,
   5: 4,
   6: 4,
   7: 5
@@ -74,12 +74,16 @@ export default {
       this.completed++;
       this.field[i][j] = this.currentType;
       this.currentType = (this.currentType === -1? 1 : -1);
-      this.finished = this.check();
+      if (this.sizeOfField === 3) {
+        this.finished = this.check3();
+      } else {
+        this.finished = this.check4();
+      }
     },
     getPositionIndex(i, j) {
       return (i - 1) * this.sizeOfField + j - 1;
     },
-    check() {
+    check3() {
       for (let i = 0; i < this.sizeOfField; i++) {
         for (let j = 0; j <= this.sizeOfField - rules[this.sizeOfField]; j++) {
           if (this.field[i][j] && this.field[i][j] === this.field[i][j + 1] && this.field[i][j + 1] === this.field[i][j + 2]) {
@@ -104,6 +108,41 @@ export default {
             this.winPositions.push(this.getPositionIndex(this.sizeOfField - j - 1, i));
             this.winPositions.push(this.getPositionIndex(this.sizeOfField - j - 2, i + 1));
             this.winPositions.push(this.getPositionIndex(this.sizeOfField - j - 3, i + 2));
+            return true;
+          }
+        }
+      }
+      return this.completed === this.sizeOfField * this.sizeOfField;
+    },
+    check4() {
+      for (let i = 0; i < this.sizeOfField; i++) {
+        for (let j = 0; j <= this.sizeOfField - rules[this.sizeOfField]; j++) {
+          if (this.field[i][j] && this.field[i][j] === this.field[i][j + 1] && this.field[i][j + 1] === this.field[i][j + 2] && this.field[i][j + 1] === this.field[i][j + 3]) {
+            this.winPositions.push(this.getPositionIndex(i, j));
+            this.winPositions.push(this.getPositionIndex(i, j + 1));
+            this.winPositions.push(this.getPositionIndex(i, j + 2));
+            this.winPositions.push(this.getPositionIndex(i, j + 3));
+            return true;
+          }
+          if (this.field[j][i] && this.field[j][i] === this.field[j + 1][i] && this.field[j + 1][i] === this.field[j + 2][i] && this.field[j + 1][i] === this.field[j + 3][i]) {
+            this.winPositions.push(this.getPositionIndex(j, i));
+            this.winPositions.push(this.getPositionIndex(j + 1, i));
+            this.winPositions.push(this.getPositionIndex(j + 2, i));
+            this.winPositions.push(this.getPositionIndex(j + 3, i));
+            return true;
+          }
+          if (i + 3 < this.sizeOfField && j + 3 < this.sizeOfField && this.field[i][j] && this.field[i][j] === this.field[i + 1][j + 1] && this.field[i + 1][j + 1] === this.field[i + 2][j + 2] && this.field[i + 1][j + 1] === this.field[i + 3][j + 3]) {
+            this.winPositions.push(this.getPositionIndex(i, j));
+            this.winPositions.push(this.getPositionIndex(i + 1, j + 1));
+            this.winPositions.push(this.getPositionIndex(i + 2, j + 2));
+            this.winPositions.push(this.getPositionIndex(i + 3, j + 3));
+            return true;
+          }
+          if (i + 3 < this.sizeOfField && this.sizeOfField - j - 4 >= 0 && this.field[this.sizeOfField - j - 1][i] && this.field[this.sizeOfField - j - 1][i] === this.field[this.sizeOfField - j - 2][i + 1] && this.field[this.sizeOfField - j - 2][i + 1] === this.field[this.sizeOfField - j - 3][i + 2] && this.field[this.sizeOfField - j - 2][i + 1] === this.field[this.sizeOfField - j - 4][i + 3]) {
+            this.winPositions.push(this.getPositionIndex(this.sizeOfField - j - 1, i));
+            this.winPositions.push(this.getPositionIndex(this.sizeOfField - j - 2, i + 1));
+            this.winPositions.push(this.getPositionIndex(this.sizeOfField - j - 3, i + 2));
+            this.winPositions.push(this.getPositionIndex(this.sizeOfField - j - 4, i + 3));
             return true;
           }
         }
