@@ -1,6 +1,8 @@
 <template>
   <div id="app">
     <h1>Tic-tac-toe</h1>
+    <img class="theme" style="background-color: black" @click="changeTheme" v-show="this.isDark" src="@/assets/sun.svg" alt="тема">
+    <img class="theme" style="background-color: white" @click="changeTheme" v-show="!this.isDark" src="@/assets/moon.svg" alt="тема">
       <table>
         <tr v-for="i in this.field.length">
           <td
@@ -12,7 +14,7 @@
                 'left-down' : (i === sizeOfField && j === 1),
                 'right-down' : (i === sizeOfField && j === sizeOfField)
               }"
-              @click="putSign(i - 1, j - 1)"
+              @click="putSign(i - 1, j - 1) /* ставим знак */"
           >
             <transition name="fade">
               <img v-show="field[i - 1][j - 1] === 1 /* картинка крестика видна только тогда, когда этого требует состояние */" src="@/assets/x.svg" alt="X">
@@ -56,6 +58,15 @@ const rules = {
 
 export default {
   name: 'App',
+  mounted() {
+    // небольшие фокусы с темной темой, чтобы пользователь не напрягался
+    if (localStorage.getItem('theme') === 'dark') {
+      this.changeTheme()
+    } else {
+      localStorage['theme'] = 'light';
+      this.isDark = false;
+    }
+  },
   data() {
     return {
       field: [
@@ -67,7 +78,8 @@ export default {
       currentType: 1, // тип следующего символа
       finished: true, // завершена ли игра
       sizeOfField: 3, // размер стороны поля
-      completed: 0 // количество выставленных символов
+      completed: 0, // количество выставленных символов,
+      isDark: false, // правда ли то, что у нас темная тема на сайте
     }
   },
   methods: {
@@ -164,6 +176,17 @@ export default {
       this.finished = false;
       this.currentType = 1;
       this.completed = 0;
+    },
+    changeTheme() {
+      // функция смены темы
+      if (this.isDark) {
+        document.getElementsByTagName('html')[0].style.filter = "";
+        localStorage['theme'] = 'light';
+      } else {
+        document.getElementsByTagName('html')[0].style.filter = "invert(100%)";
+        localStorage['theme'] = 'dark';
+      }
+      this.isDark = !this.isDark;
     }
   },
 }
@@ -208,6 +231,7 @@ td {
 img {
   width: 60px;
   transition-duration: .3s;
+  user-select: none !important;
 }
 .O {
   width: 48px;
@@ -281,5 +305,16 @@ button:hover {
   .O {
     width: 75px;
   }
+}
+.theme {
+  top: 0;  left: 0;
+  width: 38px;
+  margin: 8px;
+  position: absolute;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 15px;
+  transition-duration: 1s;
+  box-shadow: 0 1px 6px 2px rgba(0,0,0,0.1);
 }
 </style>
